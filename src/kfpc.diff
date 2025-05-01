@@ -1,0 +1,583 @@
+diff -r KFPC-XT/HDL/Chipset.sv ../../PCXT_MiSTer/rtl/KFPC-XT/HDL/Chipset.sv
+37d36
+<         output  logic   [3:0]   CGA,
+232c231
+<         .io_channel_ready                   (io_channel_ready & memory_access_ready /*& tandy_snd_rdy*/),
+---
+>         .io_channel_ready                   (io_channel_ready & memory_access_ready & tandy_snd_rdy),
+305d303
+<         .CGA                                (CGA),
+diff -r KFPC-XT/HDL/KF8253/HDL/KF8253_Counter.sv ../../PCXT_MiSTer/rtl/KFPC-XT/HDL/KF8253/HDL/KF8253_Counter.sv
+179c179
+<             read_counter_data = count_latched[15:8];
+---
+>             read_counter_data <= count_latched[15:8];
+181c181
+<             read_counter_data = count_latched[7:0];
+---
+>             read_counter_data <= count_latched[7:0];
+diff -r KFPC-XT/HDL/KF8259/HDL/KF8259_Control_Logic.sv ../../PCXT_MiSTer/rtl/KFPC-XT/HDL/KF8259/HDL/KF8259_Control_Logic.sv
+522c522
+<             cascade_out = 3'b000;
+---
+>             cascade_out <= 3'b000;
+524c524
+<             cascade_out = 3'b000;
+---
+>             cascade_out <= 3'b000;
+526c526
+<             cascade_out = 3'b000;
+---
+>             cascade_out <= 3'b000;
+528c528
+<             cascade_out = bit2num(acknowledge_interrupt);
+---
+>             cascade_out <= bit2num(acknowledge_interrupt);
+diff -r KFPC-XT/HDL/Peripherals.sv ../../PCXT_MiSTer/rtl/KFPC-XT/HDL/Peripherals.sv
+35d34
+<         output  logic   [3:0]   CGA,
+223c222
+< 	wire    lpt_ctrl_select         = (iorq && ~address_enable_n && address[15:0] == 16'h037A); // 0x37A
+---
+> 	 wire    lpt_ctrl_select         = (iorq && ~address_enable_n && address[15:0] == 16'h037A); // 0x37A
+540,554c539,552
+<     // nand2mario: add sound later
+< //    jtopl2 jtopl2_inst
+< //    (
+< //        .rst(reset),
+< //        .clk(clock),
+< //        .cen(clk_en_opl2),
+< //        .din(internal_data_bus),
+< //        .dout(jtopl2_dout),
+< //        .addr(address[0]),
+< //        .cs_n(~(opl_228_chip_select || opl_388_chip_select)),
+< //        .wr_n(io_write_n),
+< //        .irq_n(),
+< //        .snd(jtopl2_snd_e),
+< //        .sample()
+< //    );
+---
+>     jtopl2 jtopl2_inst
+>     (
+>         .rst(reset),
+>         .clk(clock),
+>         .cen(clk_en_opl2),
+>         .din(internal_data_bus),
+>         .dout(jtopl2_dout),
+>         .addr(address[0]),
+>         .cs_n(~(opl_228_chip_select || opl_388_chip_select)),
+>         .wr_n(io_write_n),
+>         .irq_n(),
+>         .snd(jtopl2_snd_e),
+>         .sample()
+>     );
+558,569c556,567
+< //	 jt89 sn76489
+< //    (
+< //        .rst(reset),
+< //		  .clk(clock),
+< //		  .clk_en(clk_en_opl2), // 3.579MHz
+< //		  .wr_n(io_write_n),
+< //		  .cs_n(tandy_chip_select_n),
+< //		  .din(internal_data_bus),
+< //		  .sound(tandy_snd_e),
+< //		  .ready(tandy_snd_rdy)
+< //    );
+< //	 
+---
+> 	 jt89 sn76489
+>     (
+>         .rst(reset),
+> 		  .clk(clock),
+> 		  .clk_en(clk_en_opl2), // 3.579MHz
+> 		  .wr_n(io_write_n),
+> 		  .cs_n(tandy_chip_select_n),
+> 		  .din(internal_data_bus),
+> 		  .sound(tandy_snd_e),
+> 		  .ready(tandy_snd_rdy)
+>     );
+> 	 
+749a748,769
+> 	 
+>     uart uart1
+>     (
+>         .clk               (clock),
+>         .br_clk            (clk_uart),
+>         .reset             (reset),
+> 
+>         .address           (address[2:0]),
+>         .writedata         (write_to_uart),
+>         .read              (~io_read_n  & prev_io_read_n),
+>         .write             (io_write_n & ~prev_io_write_n),
+>         .readdata          (uart_readdata_1),
+>         .cs                (uart_chip_select & iorq_uart),
+>         .rx                (uart_tx),
+>         .cts_n             (0),
+>         .dcd_n             (0),
+>         .dsr_n             (0),
+>         .ri_n              (1),
+>         .rts_n             (rts_n),
+>         .irq               (uart_irq)
+>     );
+> 	 
+751,794c771,791
+<     // nand2mario: add UART later
+< //    uart uart1
+< //    (
+< //        .clk               (clock),
+< //        .br_clk            (clk_uart),
+< //        .reset             (reset),
+< 
+< //        .address           (address[2:0]),
+< //        .writedata         (write_to_uart),
+< //        .read              (~io_read_n  & prev_io_read_n),
+< //        .write             (io_write_n & ~prev_io_write_n),
+< //        .readdata          (uart_readdata_1),
+< //        .cs                (uart_chip_select & iorq_uart),
+< //        .rx                (uart_tx),
+< //        .cts_n             (0),
+< //        .dcd_n             (0),
+< //        .dsr_n             (0),
+< //        .ri_n              (1),
+< //        .rts_n             (rts_n),
+< //        .irq               (uart_irq)
+< //    );
+< //	 
+< 
+< //    uart uart2
+< //    (
+< //        .clk               (clock),
+< //        .br_clk            (clk_uart),
+< //        .reset             (reset),
+< 
+< //        .address           (address[2:0]),
+< //        .writedata         (write_to_uart2),
+< //        .read              (~io_read_n  & prev_io_read_n),
+< //        .write             (io_write_n & ~prev_io_write_n),
+< //        .readdata          (uart2_readdata_1),
+< //        .cs                (uart2_chip_select & iorq_uart),
+< 
+< //        .rx                (uart2_rx),
+< //        .tx                (uart2_tx),
+< //        .cts_n             (uart2_cts_n),
+< //        .dcd_n             (uart2_dcd_n),
+< //        .dsr_n             (uart2_dsr_n),
+< //        .rts_n             (uart2_rts_n),
+< //        .dtr_n             (uart2_dtr_n),
+< //        .ri_n              (1),
+---
+>     uart uart2
+>     (
+>         .clk               (clock),
+>         .br_clk            (clk_uart),
+>         .reset             (reset),
+> 
+>         .address           (address[2:0]),
+>         .writedata         (write_to_uart2),
+>         .read              (~io_read_n  & prev_io_read_n),
+>         .write             (io_write_n & ~prev_io_write_n),
+>         .readdata          (uart2_readdata_1),
+>         .cs                (uart2_chip_select & iorq_uart),
+> 
+>         .rx                (uart2_rx),
+>         .tx                (uart2_tx),
+>         .cts_n             (uart2_cts_n),
+>         .dcd_n             (uart2_dcd_n),
+>         .dsr_n             (uart2_dsr_n),
+>         .rts_n             (uart2_rts_n),
+>         .dtr_n             (uart2_dtr_n),
+>         .ri_n              (1),
+796,797c793,794
+< //        .irq               (uart2_irq)
+< //    );
+---
+>         .irq               (uart2_irq)
+>     );
+941d937
+<     assign CGA = video_cga;
+965d960
+<     logic hgc_grph_page;
+966a962,971
+>     hgc_vgaport vga_hgc 
+>     (
+>         .clk(clk_vga_hgc),
+>         .video(video_hgc),
+>         .intensity(intensity),
+>         .red(R_HGC),
+>         .green(G_HGC),
+>         .blue(B_HGC),
+>         .hgc_rgb(hgc_rgb)
+>     );
+968,1005c973,999
+< //    hgc_vgaport vga_hgc 
+< //    (
+< //        .clk(clk_vga_hgc),
+< //        .video(video_hgc),
+< //        .intensity(intensity),
+< //        .red(R_HGC),
+< //        .green(G_HGC),
+< //        .blue(B_HGC),
+< //        .hgc_rgb(hgc_rgb)
+< //    );
+< 
+< //    hgc hgc1 
+< //    (
+< //        .clk                        (clk_vga_hgc),
+< //        .bus_a                      (hgc_io_address_2),
+< //        .bus_ior_l                  (hgc_io_read_n_3),
+< //        .bus_iow_l                  (hgc_io_write_n_3),
+< //        .bus_memr_l                 (1'd0),
+< //        .bus_memw_l                 (1'd0),
+< //        .bus_d                      (hgc_io_data_2),
+< //        .bus_out                    (HGC_CRTC_DOUT),
+< //        .bus_dir                    (HGC_CRTC_OE),
+< //        .bus_aen                    (hgc_address_enable_n_2),
+< //        .ram_we_l                   (HGC_VRAM_ENABLE),
+< //        .ram_a                      (HGC_VRAM_ADDR),
+< //        .ram_d                      (HGC_VRAM_DOUT),
+< //        .hsync                      (HSYNC_HGC),
+< //        .hblank                     (HBLANK_HGC),
+< //        .vsync                      (VSYNC_HGC),
+< //        .vblank                     (VBLANK_HGC),
+< //        .intensity                  (intensity),
+< //        .video                      (video_hgc),
+< //        .de_o                       (de_o_hgc),
+< //        .grph_mode                  (hgc_grph_mode),
+< //        .grph_page                  (hgc_grph_page),
+< //        .hercules_hw                (hercules_hw)
+< //		  
+< //    );
+---
+>     hgc hgc1 
+>     (
+>         .clk                        (clk_vga_hgc),
+>         .bus_a                      (hgc_io_address_2),
+>         .bus_ior_l                  (hgc_io_read_n_3),
+>         .bus_iow_l                  (hgc_io_write_n_3),
+>         .bus_memr_l                 (1'd0),
+>         .bus_memw_l                 (1'd0),
+>         .bus_d                      (hgc_io_data_2),
+>         .bus_out                    (HGC_CRTC_DOUT),
+>         .bus_dir                    (HGC_CRTC_OE),
+>         .bus_aen                    (hgc_address_enable_n_2),
+>         .ram_we_l                   (HGC_VRAM_ENABLE),
+>         .ram_a                      (HGC_VRAM_ADDR),
+>         .ram_d                      (HGC_VRAM_DOUT),
+>         .hsync                      (HSYNC_HGC),
+>         .hblank                     (HBLANK_HGC),
+>         .vsync                      (VSYNC_HGC),
+>         .vblank                     (VBLANK_HGC),
+>         .intensity                  (intensity),
+>         .video                      (video_hgc),
+>         .de_o                       (de_o_hgc),
+>         .grph_mode                  (hgc_grph_mode),
+>         .grph_page                  (hgc_grph_page),
+>         .hercules_hw                (hercules_hw)
+> 		  
+>     );
+1020,1021c1014,1015
+<     reg CGA_CRTC_OE_1;
+<     reg CGA_CRTC_OE_2;
+---
+>     wire CGA_CRTC_OE_1;
+>     wire CGA_CRTC_OE_2;
+1023,1024c1017,1018
+<     reg [7:0] CGA_CRTC_DOUT_1;
+<     reg [7:0] CGA_CRTC_DOUT_2;
+---
+>     wire [7:0] CGA_CRTC_DOUT_1;
+>     wire [7:0] CGA_CRTC_DOUT_2;
+1042,1052c1036,1046
+< //    cga_vgaport vga_cga 
+< //    (
+< //        .clk(clk_vga_cga),
+< //        .clkdiv(clkdiv),
+< //        .video(video_cga),
+< //        .hblank(HBLANK_CGA),
+< //        .composite(tandy_video ? swap_video ? ~composite : composite : composite),
+< //        .red(R_CGA),
+< //        .green(G_CGA),
+< //        .blue(B_CGA)
+< //    );
+---
+>     cga_vgaport vga_cga 
+>     (
+>         .clk(clk_vga_cga),
+>         .clkdiv(clkdiv),
+>         .video(video_cga),
+>         .hblank(HBLANK_CGA),
+>         .composite(tandy_video ? swap_video ? ~composite : composite : composite),
+>         .red(R_CGA),
+>         .green(G_CGA),
+>         .blue(B_CGA)
+>     );
+1101c1095
+<     // defparam hgc1.BLINK_MAX = 24'd9100000;
+---
+>     defparam hgc1.BLINK_MAX = 24'd9100000;
+1210d1203
+< /*
+1244c1237
+< */
+---
+> 
+1252d1244
+< /*
+1277c1269
+< */
+---
+> 
+1338d1329
+< /*
+1377d1367
+< */
+diff -r KFPC-XT/HDL/RAM.sv ../../PCXT_MiSTer/rtl/KFPC-XT/HDL/RAM.sv
+74d73
+<     logic tandy_bios_select;
+242c241
+<                 access_data_in  = {8'h00, internal_data_bus};       // nand2mario: send command and data together
+---
+>                 access_data_in  = {8'h00, latch_data};
+314,317c313,316
+<         else begin
+<             if (read_flag)
+<                 data_bus_out_reg <= access_data_out[7:0];
+<         end
+---
+>         else if (read_flag)
+>             data_bus_out_reg    <= access_data_out[7:0];
+>         else
+>             data_bus_out_reg    <= data_bus_out_reg;
+320,321c319,320
+<     // nand2mario: made simpler
+<     assign  data_bus_out = /*~read_command ? 0 :*/ ~read_flag ? data_bus_out_reg : access_data_out[7:0];
+---
+>     assign  data_bus_out = ~read_command ? 0 : ~read_flag ? data_bus_out_reg : access_data_out[7:0];
+> 
+diff -r KFPC-XT/HDL/XT2IDE.sv ../../PCXT_MiSTer/rtl/KFPC-XT/HDL/XT2IDE.sv
+1,113c1,111
+< //
+< // XT2IDE written by kitune-san
+< //
+< module XT2IDE
+< (
+<     input   logic           clock,
+<     input   logic           reset,
+< 
+<     input   logic           high_speed,
+< 
+<     input   logic           chip_select_n,
+<     input   logic           io_read_n,
+<     input   logic           io_write_n,
+< 
+<     input   logic   [4:0]   address,
+<     input   logic   [7:0]   data_bus_in,
+<     output  logic   [7:0]   data_bus_out,
+< 
+<     output  logic           ide_cs1fx,
+<     output  logic           ide_cs3fx,
+<     output  logic           ide_io_read_n,
+<     output  logic           ide_io_write_n,
+< 
+<     output  logic   [2:0]   ide_address,
+<     input   logic   [15:0]  ide_data_bus_in,
+<     output  logic   [15:0]  ide_data_bus_out
+< );
+< 
+<     logic           select_1;
+<     logic           select_2;
+<     logic           latch_high_read_byte;
+<     logic           read_high_byte;
+<     logic           latch_high_write_byte;
+<     logic   [7:0]   read_buffer;
+< 
+<     //
+<     // Control Signals
+<     //
+<     assign select_1 = high_speed ? address[0] : address[3];
+<     assign select_2 = high_speed ? address[3] : address[0];
+< 
+<     always_comb
+<     begin
+<         latch_high_read_byte    = 1'b0;
+<         read_high_byte          = 1'b0;
+<         latch_high_write_byte   = 1'b0;
+< 
+<         if (~address[2] & ~address[1] & ~select_2 & ~chip_select_n) begin
+<             casez ({select_1, io_read_n, io_write_n})
+<                 3'b001: latch_high_read_byte    = 1'b1;
+<                 3'b101: read_high_byte          = 1'b1;
+<                 3'b110: latch_high_write_byte   = 1'b1;
+<                 default: ;
+<             endcase
+<         end
+<     end
+< 
+<     assign  ide_io_read_n   = io_read_n;
+<     assign  ide_io_write_n  = io_write_n;
+<     assign  ide_cs1fx       =  select_1 | chip_select_n;
+<     assign  ide_cs3fx       = ~select_1 | chip_select_n;
+< 
+<     //
+<     // XT Address -> IDE Address
+<     //
+<     assign  ide_address = {address[2:1], select_2};
+< 
+<     //
+<     // XT Data Bus -> IDE Data Bus
+<     //
+<     always_ff @(posedge clock)
+<     begin
+<         if (reset)
+<             ide_data_bus_out[15:8]  <= 8'hFF;
+<         else if (~chip_select_n & latch_high_write_byte)
+<             ide_data_bus_out[15:8]  <= data_bus_in;
+<         else
+<             ide_data_bus_out[15:8]  <= ide_data_bus_out[15:8];
+<     end
+< 
+<     // nand2mario: not sure what's going on here
+<     always_ff @(posedge clock)
+<     begin
+<         if (io_write_n | chip_select_n)
+<             ide_data_bus_out[7:0]   <= 8'hFF;
+<         else
+<             ide_data_bus_out[7:0]   <= data_bus_in;
+<     end
+< 
+<     //
+<     // IDE Data Bus -> XT Data Bus
+<     //
+<     always_ff @(posedge clock)
+<     begin
+<         if (reset)
+<             read_buffer <= 8'hFF;
+<         else if (~ide_io_read_n & latch_high_read_byte)
+<             read_buffer <= ide_data_bus_in[15:8];
+<         else
+<             read_buffer <= read_buffer;
+<     end
+< 
+<     always_comb
+<     begin
+<         if (read_high_byte)
+<             data_bus_out    = read_buffer;
+<         else if (~io_read_n & ~chip_select_n)
+<             data_bus_out    = ide_data_bus_in[7:0];
+<         else
+<             data_bus_out    = 8'hFF;
+<     end
+< 
+< endmodule
+---
+> //
+> // XT2IDE written by kitune-san
+> //
+> module XT2IDE
+> (
+>     input   logic           clock,
+>     input   logic           reset,
+> 
+>     input   logic           high_speed,
+> 
+>     input   logic           chip_select_n,
+>     input   logic           io_read_n,
+>     input   logic           io_write_n,
+> 
+>     input   logic   [4:0]   address,
+>     input   logic   [7:0]   data_bus_in,
+>     output  logic   [7:0]   data_bus_out,
+> 
+>     output  logic           ide_cs1fx,
+>     output  logic           ide_cs3fx,
+>     output  logic           ide_io_read_n,
+>     output  logic           ide_io_write_n,
+> 
+>     output  logic   [2:0]   ide_address,
+>     input   logic   [15:0]  ide_data_bus_in,
+>     output  logic   [15:0]  ide_data_bus_out
+> );
+> 
+>     logic           select_1;
+>     logic           select_2;
+>     logic           latch_high_read_byte;
+>     logic           read_high_byte;
+>     logic           latch_high_write_byte;
+>     logic   [7:0]   read_buffer;
+> 
+>     //
+>     // Control Signals
+>     //
+>     assign select_1 = high_speed ? address[0] : address[3];
+>     assign select_2 = high_speed ? address[3] : address[0];
+> 
+>     always_comb
+>     begin
+>         latch_high_read_byte    = 1'b0;
+>         read_high_byte          = 1'b0;
+>         latch_high_write_byte   = 1'b0;
+> 
+>         if (~address[2] & ~address[1] & ~select_2 & ~chip_select_n) begin
+>             casez ({select_1, io_read_n, io_write_n})
+>                 3'b001: latch_high_read_byte    = 1'b1;
+>                 3'b101: read_high_byte          = 1'b1;
+>                 3'b110: latch_high_write_byte   = 1'b1;
+>             endcase
+>         end
+>     end
+> 
+>     assign  ide_io_read_n   = io_read_n;
+>     assign  ide_io_write_n  = io_write_n;
+>     assign  ide_cs1fx       =  select_1 | chip_select_n;
+>     assign  ide_cs3fx       = ~select_1 | chip_select_n;
+> 
+>     //
+>     // XT Address -> IDE Address
+>     //
+>     assign  ide_address = {address[2:1], select_2};
+> 
+>     //
+>     // XT Data Bus -> IDE Data Bus
+>     //
+>     always_ff @(posedge clock, posedge reset)
+>     begin
+>         if (reset)
+>             ide_data_bus_out[15:8]  <= 8'hFF;
+>         else if (~chip_select_n & latch_high_write_byte)
+>             ide_data_bus_out[15:8]  <= data_bus_in;
+>         else
+>             ide_data_bus_out[15:8]  <= ide_data_bus_out[15:8];
+>     end
+> 
+>     always_comb
+>     begin
+>         if (io_write_n | chip_select_n)
+>             ide_data_bus_out[7:0]   = 8'hFF;
+>         else
+>             ide_data_bus_out[7:0]   = data_bus_in;
+>     end
+> 
+>     //
+>     // IDE Data Bus -> XT Data Bus
+>     //
+>     always_ff @(posedge clock, posedge reset)
+>     begin
+>         if (reset)
+>             read_buffer <= 8'hFF;
+>         else if (~ide_io_read_n & latch_high_read_byte)
+>             read_buffer <= ide_data_bus_in[15:8];
+>         else
+>             read_buffer <= read_buffer;
+>     end
+> 
+>     always_comb
+>     begin
+>         if (read_high_byte)
+>             data_bus_out    = read_buffer;
+>         else if (~io_read_n & ~chip_select_n)
+>             data_bus_out    = ide_data_bus_in[7:0];
+>         else
+>             data_bus_out    = 8'hFF;
+>     end
+> 
+> endmodule
