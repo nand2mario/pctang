@@ -79,7 +79,7 @@
         <File path="src/video/cga_vgaport.v" type="file.verilog" enable="1"/>
         <File path="src/video/cga_vram.v" type="file.verilog" enable="1"/>
         <File path="src/video/vram.v" type="file.verilog" enable="1"/>
-        <File path="src/boards/console60k.cst" type="file.cst" enable="1"/>
+        <File path="src/boards/console.cst" type="file.cst" enable="1"/>
         <File path="src/cga2hdmi.rao" type="file.gao" enable="0"/>
         <File path="src/fdd.rao" type="file.gao" enable="0"/>
         <File path="src/floppy_read.rao" type="file.gao" enable="0"/>
